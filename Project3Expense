@@ -1,0 +1,101 @@
+import json
+from datetime import datetime
+from collections import defaultdict
+
+# Initialize empty expense data
+expense_data = []
+
+expense_categories = ["Food", "Transportation",
+                      "Entertainment", "Utilities", "Others"]
+
+
+def load_data():
+    global expense_data
+    try:
+        with open('expenses.json', 'r') as file:
+            expense_data = json.load(file)
+    except FileNotFoundError:
+        expense_data = []
+
+
+def save_data():
+    with open('expenses.json', 'w') as file:
+        json.dump(expense_data, file, indent=2)
+
+
+load_data()
+
+
+def display_expenses():
+    print("\nExpenses:")
+    for expense in expense_data:
+        print(f"{expense['description']} - {expense['amount']
+                                            } - {expense['category']} - {expense['date']}")
+
+
+def add_expense():
+    description = input("Enter expense description: ")
+
+    print("Expense Categories:")
+    for index, category in enumerate(expense_categories, start=1):
+        print(f"{index}. {category}")
+
+    category_choice = int(
+        input("Enter the number corresponding to the expense category: "))
+    category = expense_categories[category_choice - 1]
+
+    amount = float(input("Enter expense amount: "))
+    date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    expense = {'description': description,
+               'category': category, 'amount': amount, 'date': date}
+    expense_data.append(expense)
+    save_data()
+
+
+def monthly_summary():
+    total_expenses = sum(expense['amount'] for expense in expense_data)
+
+    monthly_summaries = defaultdict(float)
+    for expense in expense_data:
+        month_year = expense['date'][:7]
+        monthly_summaries[month_year] += expense['amount']
+
+    category_expenditure = defaultdict(float)
+    for expense in expense_data:
+        category_expenditure[expense['category']] += expense['amount']
+
+    print("\nMonthly Summary:")
+    for month, total_amount in monthly_summaries.items():
+        print(f"{month}: {total_amount}")
+
+    print("\nCategory-wise Expenditure:")
+    for category, total_amount in category_expenditure.items():
+        print(f"{category}: {total_amount}")
+
+
+def main():
+    while True:
+        print("\nExpense Tracker Menu:")
+        print("1. Display Expenses")
+        print("2. Add Expense")
+        print("3. Monthly Summary")
+        print("4. Exit")
+
+        choice = input("Enter your choice (1-4): ")
+
+        if choice == '1':
+            display_expenses()
+        elif choice == '2':
+            add_expense()
+        elif choice == '3':
+            monthly_summary()
+        elif choice == '4':
+            print("Exiting Expense Tracker. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 4.")
+
+
+if __name__ == '__main__':
+    main()
