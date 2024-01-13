@@ -1,7 +1,6 @@
 # Motion-Cuts
 
 # TASK 1
-  In Task 1 we studied about 
 
 
 
